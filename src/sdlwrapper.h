@@ -147,4 +147,21 @@ namespace SDLwrapper
  */
     bool keyDown(int key);
     bool keyPressed(int key);
+
+/*
+ *  Functions for screen
+ *
+ */
+    void screen(int width = 640, int height = 400, bool fullscreen = 0, const std::string& text = " ");
+    void lock();
+    void unlock();
+    void redraw();
+    void cls(const ColorRGB& color = RGB_Black);
+    void pset(int x, int y, const ColorRGB& color);
+    ColorRGB pget(intx, int y);
+    void drawBuffer(Uint32 *buffer);
+    bool onScreen(int x, int y);
+
+
+
 }
