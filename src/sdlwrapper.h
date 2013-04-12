@@ -220,4 +220,42 @@ namespace SDLwrapper
     int decodePNG(std::vector<unsigned char>& out_image_32bit, unsigned long& image_width, unsigned long& image_height, const std::vector<unsigned char>& in_png);
 
 
+/*
+ *  Text functions
+ *
+ */
+    extern bool font[256][8][8];
+    void drawLetter(unsigned char n, int x, int y, const ColorRGB& color = RGB_White, bool bg = 0, const ColorRGB& color2 = RGB_Black);
+    int printString(const std::string& text, int x = 0, int y = 0, const ColorRGB& color = RGB_White, bool bg = 0, const ColorRGB& color2 = RGB_Black, int forceLength = 0);
+
+    //print something (string, int, float, ...)
+    template<typename T>
+    int print(const T& val, int x = 0, int y = 0, const ColorRGB& color = RGB_White, bool bg = 0, const ColorRGB& color2 = RGB_Black, int forceLength = 0)
+    {
+        std::string text = valtostr(val);
+        return printString(text, x, y, color, bg, color2, forceLength);
+    }
+
+    //print some floating point number, this one allows printing floating point numbers with limited length
+    template<typename T>
+    int fprint(const T& val, int length, int x = 0, int y = 0, const ColorRGB& color = RGB_White, bool bg = 0, const ColorRGB& color2 = RGB_Black, int forceLength = 0)
+    {
+        std::string text = valtostr(val, length, true);
+        return printString(text, x, y, color, bg, color2, forceLength);
+    }
+
+/*
+ *  Text input functions
+ *
+ */
+    Uint8 getInputCharacter();
+    void getInputString(std::string& text, const std::string& message = "", bool clear = false, int x = 0, int y = 0, const ColorRGB& color = RGB_White, bool bg = 0, const ColorRGB& color2 = RGB_Black);
+
+    template<typename T>
+    T getInput(const std::string& message = "", bool clear = false, int x = 0, int y = 0, const ColorRGB& color = RGB_White, bool bg = 0, const ColorRGB& color2 = RGB_Black)
+    {
+        std::string text;
+        getInputString(text, message, clear, x, y, color, bg, color2);
+        return strtoval<T>(text);
+    }
 }
