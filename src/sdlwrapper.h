@@ -162,6 +162,20 @@ namespace SDLwrapper
     void drawBuffer(Uint32 *buffer);
     bool onScreen(int x, int y);
 
-
-
+/*
+ *  Other functions
+ *
+ */
+    void sleep();
+    void waitFrame(double oldTime, double frameDuration); /* seconds */
+    bool done(bool quit_if_esc = true, bool delay = true);
+    void end();
+    void readKeys();
+    void getMouseState(int& mouseX, int& mouseY);
+    void getMouseState(int& mouseX, int& mouseY, bool& LMB, bool& RMB);
+    unsigned long getTicks(); /* in milliseconds */
+    inline double getTime()
+    {
+         return getTicks() / 1000.0;
+    }
 }
