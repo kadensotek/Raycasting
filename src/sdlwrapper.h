@@ -201,4 +201,23 @@ namespace SDLwrapper
     Uint32 RGBtoINT(const ColorRGB& colorRGB);
     ColorRGB INTtoRGB(Uint32 colorINT);
 
+
+/*
+ *  File functions
+ *
+ */
+    void loadFile(std::vector<unsigned char>& buffer, const std::string& filename);
+    void saveFile(const std::vector<unsigned char>& buffer, const std::string& filename);
+
+
+/*
+ *  Image functions
+ *
+ */
+    int loadImage(std::vector<ColorRGB>& out, unsigned long& w, unsigned long& h, const std::string& filename);
+    int loadImage(std::vector<Uint32>& out, unsigned long& w, unsigned long& h, const std::string& filename);
+    int decodePNG(std::vector<unsigned char>& out_image_32bit, unsigned long& image_width, unsigned long& image_height, const unsigned char* in_png, unsigned long in_size);
+    int decodePNG(std::vector<unsigned char>& out_image_32bit, unsigned long& image_width, unsigned long& image_height, const std::vector<unsigned char>& in_png);
+
+
 }
