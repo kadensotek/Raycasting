@@ -131,5 +131,20 @@ namespace SDLwrapper
         ColorHSV(Uint8 h, Uint8 s, Uint8 v);
         ColorHSV();
     };
-    
+
+
+/*
+ *   Global variables
+ *
+ */
+
+    extern int w;  /* width  */
+    extern int h;  /* height */
+
+/*
+ *  Keyboard action listeners
+ *
+ */
+    bool keyDown(int key);
+    bool keyPressed(int key);
 }
