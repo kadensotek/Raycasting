@@ -178,7 +178,7 @@ namespace SDLwrapper
 
 
 /*
- *  2d shapes
+ *  2d shape functions
  *
  */
     bool horLine(int y, int x1, int x2, const ColorRGB& color);
@@ -190,5 +190,15 @@ namespace SDLwrapper
     bool clipLine(int x1,int y1,int x2, int y2, int & x3, int & y3, int & x4, int & y4);
 
 
+/*
+ *  Color conversion functions
+ *
+ */
+    ColorHSL RGBtoHSL(const ColorRGB& colorRGB);
+    ColorRGB HSLtoRGB(const ColorHSL& colorHSL);
+    ColorHSV RGBtoHSV(const ColorRGB& colorRGB);
+    ColorRGB HSVtoRGB(const ColorHSV& colorHSV);
+    Uint32 RGBtoINT(const ColorRGB& colorRGB);
+    ColorRGB INTtoRGB(Uint32 colorINT);
 
 }
