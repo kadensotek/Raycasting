@@ -1180,9 +1180,59 @@ namespace sdlwrapper
 
 
 /*
+ *   Image functions
+ *
+ */
+    int loadImage(std::vector<ColorRGB>& out, unsigned long& w, unsigned long& h, const std::string& filename)
+    {
+        std::vector<unsigned char> file, image;
+        loadFile(file, filename);
+
+        if(decodePNG(image, w, h, file))
+        {
+            return 1;
+        }
+
+        out.resize(image.size() / 4);
+  
+        for(size_t i = 0; i < out.size(); i++)
+        {
+            out[i].r = image[i * 4 + 0];
+            out[i].g = image[i * 4 + 1];
+            out[i].b = image[i * 4 + 2];
+            //out[i].a = image[i * 4 + 3];
+        }
+  
+        return 0;
+    }
+
+    int loadImage(std::vector<Uint32>& out, unsigned long& w, unsigned long& h, const std::string& filename)
+    {
+        std::vector<unsigned char> file, image;
+        loadFile(file, filename);
+
+        if(decodePNG(image, w, h, file))
+        {
+            return 1;
+        }
+
+        out.resize(image.size() / 4);
+  
+        for(size_t i = 0; i < out.size(); i++)
+        {
+            out[i] = 0x1000000 * image[i * 4 + 3] + 0x10000 * image[i * 4 + 0] + 0x100 * image[i * 4 + 1] + image[i * 4 + 2];
+        }
+  
+        return 0;
+    }
+
+
+/*
  *
  *
  */
+
+
 
 
 
