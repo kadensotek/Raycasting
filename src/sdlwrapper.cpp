@@ -1228,13 +1228,77 @@ namespace sdlwrapper
 
 
 /*
+ *   Text functions
+ *
+ */
+    //Draws character n at position x,y with color RGB and, if enabled, background color
+    //This function is used by the text printing functions below, and uses the font data
+    //defined below to draw the letter pixel by pixel
+    void drawLetter(unsigned char n, int x, int y, const ColorRGB& color, bool bg, const ColorRGB& color2)
+    {
+        int u,v;
+
+        for (v = 0; v < 8; v++)
+        for (u = 0; u < 8; u++)
+        {
+            if(font[n][u][v])
+            {
+                pset(x + u, y + v, color);
+            }
+            else if(bg)
+            {
+                pset(x + u, y + v, color2);
+            }
+        }
+    }
+
+    //Draws a string of text
+    int printString(const std::string& text, int x, int y, const ColorRGB& color, bool bg, const ColorRGB& color2, int forceLength)
+    {
+        int amount = 0;
+
+        for(size_t i = 0; i < text.size(); i++)
+        {
+            amount++;
+            drawLetter(text[i], x, y, color, bg, color2);
+            x += 8;
+
+            if(x > w - 8)
+            {
+                x %= 8; y += 8;
+            }
+
+            if(y > h - 8)
+            {
+                y %= 8;
+            }
+        }
+
+        while(amount < forceLength)
+        {
+            amount++;
+            drawLetter(' ', x, y, color, bg, color2);
+            x += 8;
+
+            if(x > w - 8)
+            {
+                x %= 8; y += 8;
+            }
+
+            if(y > h - 8)
+            {
+                y %= 8;
+            }
+        }
+
+        return h * x + y;
+    }
+
+
+/*
  *
  *
  */
-
-
-
-
 
 
 
