@@ -2060,11 +2060,57 @@ O9lUrLR/ABF/3H2EtBmWAAAAAElFTkSuQmCC";
 
 
 /*
- *
+ *  SDL helper functions
  *
  */
 
+    /* SDL's C functions don't have destructors and such so therefore this here is needed
+     * currently only needed for audio, therefor it's not in a different cpp file. */
 
+    /*this creates SDL mutexes and makes sure that they're destroyed at the end. MutexFactory does the deletion! */
+    struct MutexFactory
+    {
+        SDL_mutex* createMutex()
+        {
+            mutexes.push_back(SDL_CreateMutex());
+            return mutexes.back();
+        }
+  
+        ~MutexFactory()
+        {
+            for(size_t i = 0; i < mutexes.size(); i++)
+            {
+                SDL_DestroyMutex(mutexes[i]);
+            }
+        }
+  
+        private:
+  
+        std::vector<SDL_mutex*> mutexes;
+    };  MutexFactory mutexFactory;
+
+    //this does SDL_mutexP in the ctor and SDL_mutexV in the dtor so no matter where you leave a function, SDL_mutexV is called
+    struct Mutex
+    {
+        SDL_mutex** m;
+  
+        Mutex(SDL_mutex*& mutex)
+        {
+            m = &mutex;
+            SDL_mutexP(*m);
+        }
+  
+        ~Mutex()
+        {
+            SDL_mutexV(*m);
+        }
+    };
+
+
+/*
+ *
+ *
+ */
 
 
 
