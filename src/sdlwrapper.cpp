@@ -195,6 +195,128 @@ namespace sdlwrapper
         return (x >= 0 && y >= 0 && x < w && y < h);
     }
 
+/*
+ *  Non-graphical functions
+ *
+ */
+    void sleep()
+    {
+        int done = 0;
+
+        while(done == 0)
+        {
+            while(SDL_PollEvent(&event))
+            {
+                if(event.type == SDL_QUIT)
+                {
+                    end();
+                }
+
+                if(event.type == SDL_KEYDOWN)
+                {
+                    done = 1;
+                }
+            }
+
+            SDL_Delay(5); //so it consumes less processing power
+        }
+    }
+
+    void waitFrame(double oldTime, double frameDuration) //in seconds
+    {
+        float time = getTime();
+
+        while(time - oldTime < frameDuration)
+        {
+            time = getTime();
+            SDL_PollEvent(&event);
+
+            if(event.type == SDL_QUIT)
+            {
+                end();
+            }
+
+            inkeys = SDL_GetKeyState(NULL);
+
+            if(inkeys[SDLK_ESCAPE])
+            {
+                end();
+            }
+
+            SDL_Delay(5); //so it consumes less processing power
+        }
+    }
+
+    bool done(bool quit_if_esc, bool delay) //delay makes CPU have some free time, use once per frame to avoid 100% usage of a CPU core
+    {
+        if(delay)
+        {
+            SDL_Delay(5);
+        }
+
+        int done = 0;
+
+        if(!SDL_PollEvent(&event))
+        {
+            return 0;
+        }
+
+        readKeys();
+
+        if(quit_if_esc && inkeys[SDLK_ESCAPE])
+        {
+            done = 1;
+        }
+
+        if(event.type == SDL_QUIT)
+        {
+            done = 1;
+        }
+
+        return done;
+    }
+
+    void end()
+    {
+        SDL_Quit();
+        std::exit(1);
+    }
+
+    void readKeys()
+    {
+        inkeys = SDL_GetKeyState(NULL);
+    }
+
+    void getMouseState(int& mouseX, int& mouseY, bool& LMB, bool& RMB)
+    {
+        Uint8 mouseState = SDL_GetMouseState(&mouseX, &mouseY);
+  
+        if(mouseState & 1)
+        {
+            LMB = true; 
+        }
+        else
+        {
+            LMB = false;
+        }
+
+        if(mouseState & 4)
+        {
+            RMB = true;
+        }
+        else
+        {
+            RMB = false;
+        }
+    }  
+
+    //Returns the time since program start in milliseconds
+    unsigned long getTicks()
+    {
+        return SDL_GetTicks();
+    }
+
+
 
 
 
