@@ -1142,9 +1142,51 @@ namespace sdlwrapper
     }
 
 /*
+ *   File functions
+ *
+ */
+    void loadFile(std::vector<unsigned char>& buffer, const std::string& filename) //designed for loading files from hard disk in an std::vector
+    {
+        std::ifstream file(filename.c_str(), std::ios::in|std::ios::binary|std::ios::ate);
+
+        //get filesize
+        std::streamsize size = 0;
+
+        if(file.seekg(0, std::ios::end).good())
+        {
+            size = file.tellg();
+        }
+
+        if(file.seekg(0, std::ios::beg).good())
+        {
+            size -= file.tellg();
+        }
+
+        //read contents of the file into the vector
+        buffer.resize(size_t(size));
+
+        if(size > 0)
+        {
+            file.read((char*)(&buffer[0]), size);
+        }
+    }
+
+    //write given buffer to the file, overwriting the file, it doesn't append to it.
+    void saveFile(const std::vector<unsigned char>& buffer, const std::string& filename)
+    {
+        std::ofstream file(filename.c_str(), std::ios::out|std::ios::binary);
+        file.write(buffer.size() ? (char*)&buffer[0] : 0, std::streamsize(buffer.size()));
+    }
+
+
+/*
  *
  *
  */
+
+
+
+
 
 
 
