@@ -2268,9 +2268,4 @@ O9lUrLR/ABF/3H2EtBmWAAAAAElFTkSuQmCC";
         if(audio_mode == 1) for(size_t i = 0; i < samples.size(); i++) audio_data[i] += samples[i];
         else if(audio_mode == 2) for(size_t i = 0; i < samples.size(); i++) audio_data[i] += samples[i] * audio_volume;
     }
-
-
-
-
-
 }
