@@ -868,15 +868,37 @@ namespace sdlwrapper
         {
             l = (minColor + maxColor) / 2;
 
-            if(l < 0.5) s = (maxColor - minColor) / (maxColor + minColor);
-            if(l >= 0.5) s = (maxColor - minColor) / (2.0 - maxColor - minColor);
+            if(l < 0.5)
+            {
+                s = (maxColor - minColor) / (maxColor + minColor);
+            }
 
-            if(r == maxColor) h = (g - b) / (maxColor - minColor);
-            if(g == maxColor) h = 2.0 + (b - r) / (maxColor - minColor);
-            if(b == maxColor) h = 4.0 + (r - g) / (maxColor - minColor);
+            if(l >= 0.5)
+            {
+                s = (maxColor - minColor) / (2.0 - maxColor - minColor);
+            }
+
+            if(r == maxColor)
+            {
+                h = (g - b) / (maxColor - minColor);
+            }
+
+            if(g == maxColor)
+            {
+                h = 2.0 + (b - r) / (maxColor - minColor);
+            }
+
+            if(b == maxColor)
+            {
+                h = 4.0 + (r - g) / (maxColor - minColor);
+            }
 
             h /= 6; //to bring it to a number between 0 and 1
-            if(h < 0) h += 1;
+
+            if(h < 0)
+            {
+                h += 1;
+            }
         }
   
         ColorHSL colorHSL;
@@ -897,37 +919,92 @@ namespace sdlwrapper
         l = colorHSL.l / 256.0;
 
         //If saturation is 0, the color is a shade of grey
-        if(s == 0) r = g = b = l;
+        if(s == 0)
+        {
+            r = g = b = l;
+        }
         //If saturation > 0, more complex calculations are needed
         else
         {
             //set the temporary values
-            if(l < 0.5) temp2 = l * (1 + s);
-            else temp2 = (l + s) - (l * s);
+            if(l < 0.5)
+            {
+                temp2 = l * (1 + s);
+            }
+            else
+            {
+                temp2 = (l + s) - (l * s);
+            }
+
             temp1 = 2 * l - temp2;
             tempr=h + 1.0 / 3.0;
-            if(tempr > 1.0) tempr--;
+
+            if(tempr > 1.0)
+            {
+                tempr--;
+            }
+
             tempg=h;
             tempb=h-1.0 / 3.0;
-            if(tempb < 0.0) tempb++;
+
+            if(tempb < 0.0)
+            {
+                tempb++;
+            }
 
             //red
-            if(tempr < 1.0 / 6.0) r = temp1 + (temp2 - temp1) * 6.0 * tempr;
-            else if(tempr < 0.5) r = temp2;
-            else if(tempr < 2.0 / 3.0) r = temp1 + (temp2 - temp1) * ((2.0 / 3.0) - tempr) * 6.0;
-            else r = temp1;
+            if(tempr < 1.0 / 6.0)
+            {
+                r = temp1 + (temp2 - temp1) * 6.0 * tempr;
+            }
+            else if(tempr < 0.5)
+            {
+                r = temp2;
+            }
+            else if(tempr < 2.0 / 3.0)
+            {
+                r = temp1 + (temp2 - temp1) * ((2.0 / 3.0) - tempr) * 6.0;
+            }
+            else
+            {
+                r = temp1;
+            }
     
             //green
-            if(tempg < 1.0 / 6.0) g = temp1 + (temp2 - temp1) * 6.0 * tempg;
-            else if(tempg < 0.5) g=temp2;
-            else if(tempg < 2.0 / 3.0) g = temp1 + (temp2 - temp1) * ((2.0 / 3.0) - tempg) * 6.0;
-            else g = temp1;
+            if(tempg < 1.0 / 6.0)
+            {
+                g = temp1 + (temp2 - temp1) * 6.0 * tempg;
+            }
+            else if(tempg < 0.5)
+            {
+                g=temp2;
+            }
+            else if(tempg < 2.0 / 3.0)
+            {
+                g = temp1 + (temp2 - temp1) * ((2.0 / 3.0) - tempg) * 6.0;
+            }
+            else
+            {
+                g = temp1;
+            }
 
             //blue
-            if(tempb < 1.0 / 6.0) b = temp1 + (temp2 - temp1) * 6.0 * tempb;
-            else if(tempb < 0.5) b = temp2;
-            else if(tempb < 2.0 / 3.0) b = temp1 + (temp2 - temp1) * ((2.0 / 3.0) - tempb) * 6.0;
-            else b = temp1;
+            if(tempb < 1.0 / 6.0)
+            {
+                b = temp1 + (temp2 - temp1) * 6.0 * tempb;
+            }
+            else if(tempb < 0.5)
+            {
+                b = temp2;
+            }
+            else if(tempb < 2.0 / 3.0)
+            {
+                b = temp1 + (temp2 - temp1) * ((2.0 / 3.0) - tempb) * 6.0;
+            }
+            else
+            {
+                b = temp1;
+            }
         }
 
         ColorRGB colorRGB;
@@ -961,12 +1038,27 @@ namespace sdlwrapper
         }
         else
         {
-            if(r == maxColor) h = (g - b) / (maxColor - minColor);
-            if(g == maxColor) h = 2.0 + (b - r) / (maxColor - minColor);
-            if(b == maxColor) h = 4.0 + (r - g) / (maxColor - minColor);
+            if(r == maxColor)
+            {
+                h = (g - b) / (maxColor - minColor);
+            }
+
+            if(g == maxColor)
+            {
+                h = 2.0 + (b - r) / (maxColor - minColor);
+            }
+
+            if(b == maxColor)
+            {
+                h = 4.0 + (r - g) / (maxColor - minColor);
+            }
 
             h /= 6.0; //to bring it to a number between 0 and 1
-            if(h < 0.0) h++;
+
+            if(h < 0.0)
+            {
+                h++;
+            }
         }
 
         ColorHSV colorHSV;
@@ -985,7 +1077,10 @@ namespace sdlwrapper
         v = colorHSV.v / 256.0;
 
         //if saturation is 0, the color is a shade of grey
-        if(s == 0.0) r = g = b = v;
+        if(s == 0.0)
+        {
+            r = g = b = v;
+        }
         //if saturation > 0, more complex calculations are needed
         else
         {
@@ -1001,13 +1096,27 @@ namespace sdlwrapper
 
             switch(i)
             {
-                case 0: r=v; g=t; b=p; break;
-                case 1: r=q; g=v; b=p; break;
-                case 2: r=p; g=v; b=t; break;
-                case 3: r=p; g=q; b=v; break;
-                case 4: r=t; g=p; b=v; break;
-                case 5: r=v; g=p; b=q; break;
-                default: r = g = b = 0; break;
+                case 0:
+                        r=v; g=t; b=p;
+                        break;
+                case 1: 
+                        r=q; g=v; b=p;
+                        break;
+                case 2: 
+                        r=p; g=v; b=t;
+                        break;
+                case 3: 
+                        r=p; g=q; b=v;
+                        break;
+                case 4: 
+                        r=t; g=p; b=v;
+                        break;
+                case 5: 
+                        r=v; g=p; b=q;
+                        break;
+                default:
+                        r = g = b = 0;
+                        break;
             }
         }
 
