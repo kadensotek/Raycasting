@@ -15,11 +15,11 @@ namespace sdlwrapper
  *   Variables
  *
  */
-    int w; //screen width
-    int h; //screen height
+    int w; /* screen width */
+    int h; /* screen height */
 
-    std::map<int, bool> keypressed; //if key is pressed and released
-    SDL_Surface* scr; //SDL surface
+    std::map<int, bool> keypressed; /* if key is pressed and released */
+    SDL_Surface* scr;    /* SDL surface */
     Uint8* inkeys;
     SDL_Event event = {0};
 
@@ -33,7 +33,7 @@ namespace sdlwrapper
         return (inkeys[key] != 0);
     }
 
-    bool keyPressed(int key) //returns true only once until key is released
+    bool keyPressed(int key) /* returns true only once until key is released */
     {
         if(keypressed.find(key) == keypressed.end())
         {
@@ -97,10 +97,10 @@ namespace sdlwrapper
 
         SDL_WM_SetCaption(text.c_str(), NULL);
 
-        SDL_EnableUNICODE(1); //for the text input things
+        SDL_EnableUNICODE(1); /* for text input */
     }
 
-    //Locks the screen
+    /* Locks the screen */
     void lock()
     {
         if(SDL_MUSTLOCK(scr))
@@ -108,7 +108,7 @@ namespace sdlwrapper
         return;
     }
 
-    //Unlocks the screen
+    /* Unlocks the screen */
     void unlock()
     {
         if(SDL_MUSTLOCK(scr))
@@ -117,19 +117,19 @@ namespace sdlwrapper
         }
     }
 
-    //Updates the screen.
+    /* Updates the screen */
     void redraw()
     {
         SDL_UpdateRect(scr, 0, 0, 0, 0);
     }
 
-    //Blacks out screen
+    /* Blacks out screen */
     void cls(const ColorRGB& color)
     {
         SDL_FillRect(scr, NULL, 65536 * color.r + 256 * color.g + color.b);
     }
 
-    //Puts an RGB color pixel at position x,y
+    /* Puts an RGB color pixel at position x,y */
     void pset(int x, int y, const ColorRGB& color)
     {
         if(x < 0 || y < 0 || x >= w || y >= h) return;
@@ -139,7 +139,7 @@ namespace sdlwrapper
         *bufp = colorSDL;
     }
 
-    //Gets RGB color of pixel at position x,y
+    /* Gets RGB color of pixel at position x,y */
     ColorRGB pget(int x, int y)
     {
         if(x < 0 || y < 0 || x >= w || y >= h) return RGB_Black;
@@ -151,7 +151,7 @@ namespace sdlwrapper
         return ColorRGB(colorRGB);
     }
 
-    //Draws a buffer of pixels to the screen
+    /* Draws a buffer of pixels to the screen */
     void drawBuffer(Uint32* buffer)
     {
         Uint32* bufp;
@@ -218,11 +218,11 @@ namespace sdlwrapper
                 }
             }
 
-            SDL_Delay(5); //so it consumes less processing power
+            SDL_Delay(5);
         }
     }
 
-    void waitFrame(double oldTime, double frameDuration) //in seconds
+    void waitFrame(double oldTime, double frameDuration) /* in seconds */
     {
         float time = getTime();
 
@@ -243,11 +243,11 @@ namespace sdlwrapper
                 end();
             }
 
-            SDL_Delay(5); //so it consumes less processing power
+            SDL_Delay(5);
         }
     }
 
-    bool done(bool quit_if_esc, bool delay) //delay makes CPU have some free time, use once per frame to avoid 100% usage of a CPU core
+    bool done(bool quit_if_esc, bool delay) /* delay reduces CPU load */
     {
         if(delay)
         {
@@ -310,7 +310,7 @@ namespace sdlwrapper
         }
     }  
 
-    //Returns the time since program start in milliseconds
+    /* Returns the time since program start in milliseconds */
     unsigned long getTicks()
     {
         return SDL_GetTicks();
@@ -320,7 +320,7 @@ namespace sdlwrapper
  *  2D Shapes
  *
  */
-    //Fast horizontal line from (x1,y) to (x2,y), with rgb color
+    /* Fast horizontal line from (x1,y) to (x2,y), with rgb color */
     bool horLine(int y, int x1, int x2, const ColorRGB& color)
     {
         /* Swap x1 and x2; x1 must be leftmost endpoint */
@@ -360,7 +360,7 @@ namespace sdlwrapper
         return 1;
     }
 
-    //Fast vertical line from (x,y1) to (x,y2), with rgb color
+    /* Fast vertical line from (x,y1) to (x,y2), with rgb color */
     bool verLine(int x, int y1, int y2, const ColorRGB& color)
     {
         /* Swa[ y1 and y2 */
@@ -398,7 +398,7 @@ namespace sdlwrapper
         return 1;
     }
 
-    //Bresenham line from (x1,y1) to (x2,y2) with rgb color
+    /* Bresenham line from (x1,y1) to (x2,y2) with rgb color */
     bool drawLine(int x1, int y1, int x2, int y2, const ColorRGB& color)
     {
         if(x1 < 0 || x1 > w - 1 || x2 < 0 || x2 > w - 1 || y1 < 0 || y1 > h - 1 || y2 < 0 || y2 > h - 1)
@@ -406,73 +406,73 @@ namespace sdlwrapper
             return 0;
         }
   
-        int deltax = std::abs(x2 - x1); //The difference between the x's
-        int deltay = std::abs(y2 - y1); //The difference between the y's
-        int x = x1; //Start x off at the first pixel
-        int y = y1; //Start y off at the first pixel
+        int deltax = std::abs(x2 - x1);
+        int deltay = std::abs(y2 - y1);
+        int x = x1;      /* Start x off at the first pixel */
+        int y = y1;      /* Start y off at the first pixel */
         int xinc1, xinc2, yinc1, yinc2, den, num, numadd, numpixels, curpixel;
 
-        if(x2 >= x1) //The x-values are increasing
+        if(x2 >= x1) /* The x-values are increasing */
         {
             xinc1 = 1;
             xinc2 = 1;
         }
-        else //The x-values are decreasing
+        else /* The x-values are decreasing */
         {
             xinc1 = -1;
             xinc2 = -1;
         }
 
-        if(y2 >= y1) //The y-values are increasing
+        if(y2 >= y1) /* The y-values are increasing */
         {
             yinc1 = 1;
             yinc2 = 1;
         }
-        else //The y-values are decreasing
+        else /* The y-values are decreasing */
         {
             yinc1 = -1;
             yinc2 = -1;
         }
 
-        if(deltax >= deltay) //There is at least one x-value for every y-value
+        if(deltax >= deltay) /* There is at least one x-value for every y-value */
         {
-            xinc1 = 0; //Don't change the x when numerator >= denominator
-            yinc2 = 0; //Don't change the y for every iteration
+            xinc1 = 0; /* Don't change the x when numerator >= denominator */
+            yinc2 = 0; /* Don't change the y for every iteration */
             den = deltax;
             num = deltax / 2;
             numadd = deltay;
-            numpixels = deltax; //There are more x-values than y-values
+            numpixels = deltax; /* There are more x-values than y-values */
         }
-        else //There is at least one y-value for every x-value
+        else /* There is at least one y-value for every x-value */
         {
-            xinc2 = 0; //Don't change the x for every iteration
-            yinc1 = 0; //Don't change the y when numerator >= denominator
+            xinc2 = 0; /* Don't change the x for every iteration */
+            yinc1 = 0; /* Don't change the y when numerator >= denominator */
             den = deltay;
             num = deltay / 2;
             numadd = deltax;
-            numpixels = deltay; //There are more y-values than x-values
+            numpixels = deltay; /* There are more y-values than x-values */
         }
 
         for (curpixel = 0; curpixel <= numpixels; curpixel++)
         {
-            pset(x % w, y % h, color);  //Draw the current pixel
-            num += numadd;  //Increase the numerator by the top of the fraction
+            pset(x % w, y % h, color);  /* Draw the current pixel */
+            num += numadd;  /* Increase the numerator by the top of the fraction */
 
-            if (num >= den) //Check if numerator >= denominator
+            if (num >= den) /* Check if numerator >= denominator */
             {
-                num -= den; //Calculate the new numerator value
-                x += xinc1; //Change the x as appropriate
-                y += yinc1; //Change the y as appropriate
+                num -= den; /* Calculate the new numerator value */
+                x += xinc1; /* Change the x as appropriate */
+                y += yinc1; /* Change the y as appropriate */
             }
 
-            x += xinc2; //Change the x as appropriate
-            y += yinc2; //Change the y as appropriate
+            x += xinc2; /* Change the x as appropriate */
+            y += yinc2; /* Change the y as appropriate */
         }
   
         return 1;
     }
 
-    //Bresenham circle with center at (xc,yc) with radius and red green blue color
+    /* Bresenham circle with center at (xc,yc) with radius and red green blue color */
     bool drawCircle(int xc, int yc, int radius, const ColorRGB& color)
     {
         if(xc - radius < 0 || xc + radius >= w || yc - radius < 0 || yc + radius >= h) return 0;
@@ -484,7 +484,7 @@ namespace sdlwrapper
 
         while (x <= y)
         {
-            a = xc + x; //8 pixels can be calculated at once thanks to the symmetry
+            a = xc + x; /* 8 pixels can be calculated at once thanks to the symmetry */
             b = yc + y;
             c = xc - x;
             d = yc - y;
@@ -497,7 +497,7 @@ namespace sdlwrapper
             pset(e, f, color);
             pset(g, f, color);
 
-            if(x > 0) //avoid drawing pixels at same position as the other ones
+            if(x > 0) /* avoid drawing pixels at same position as the other ones */
             {
                 pset(a, d, color);
                 pset(c, b, color);
@@ -518,10 +518,10 @@ namespace sdlwrapper
         return 1;
     }
 
-    //Filled bresenham circle with center at (xc,yc) with radius and red green blue color
+    /* Filled bresenham circle with center at (xc,yc) with radius and red green blue color */
     bool drawDisk(int xc, int yc, int radius, const ColorRGB& color)
     {
-        //every single pixel outside screen, so don't waste time on it
+        /* Don't draw off screen pixels */
         if(xc + radius < 0 || xc - radius >= w || yc + radius < 0 || yc - radius >= h)
         {
             return 0;
@@ -531,11 +531,11 @@ namespace sdlwrapper
         int y = radius;
         int p = 3 - (radius << 1);
         int a, b, c, d, e, f, g, h;
-        int pb = yc + radius + 1, pd = yc + radius + 1; //previous values: to avoid drawing horizontal lines multiple times
+        int pb = yc + radius + 1, pd = yc + radius + 1; /* previous values: to avoid drawing horizontal lines multiple times */
 
         while (x <= y)
         {
-            // write data
+            /* write data */
             a = xc + x;
             b = yc + y;
             c = xc - x;
@@ -581,7 +581,7 @@ namespace sdlwrapper
         return 1;
     }
 
-    //Rectangle with corners (x1,y1) and (x2,y2) and rgb color
+    /* Rectangle with corners (x1,y1) and (x2,y2) and rgb color */
     bool drawRect(int x1, int y1, int x2, int y2, const ColorRGB& color)
     {
         if(x1 < 0 || x1 > w - 1 || x2 < 0 || x2 > w - 1 || y1 < 0 || y1 > h - 1 || y2 < 0 || y2 > h - 1) return 0;
@@ -591,37 +591,37 @@ namespace sdlwrapper
         rec.w = x2 - x1 + 1;
         rec.h = y2 - y1 + 1;
         Uint32 colorSDL = SDL_MapRGB(scr->format, color.r, color.g, color.b);
-        SDL_FillRect(scr, &rec, colorSDL);  //SDL's ability to draw a hardware rectangle is used for now
+        SDL_FillRect(scr, &rec, colorSDL);  /* SDL's ability to draw a hardware rectangle is used for now */
         return 1;
     }
 
-    //Functions for clipping a 2D line to the screen, which is the rectangle (0,0)-(w,h)
-    //This is the Cohen-Sutherland Clipping Algorithm
-    //Each of 9 regions gets an outcode, based on if it's at the top, bottom, left or right of the screen
-    // 1001 1000 1010  9 8 10
-    // 0001 0000 0010  1 0 2
-    // 0101 0100 0110  5 4 6
-    //int findregion returns which of the 9 regions a point is in, void clipline does the actual clipping
+    /* Functions for clipping a 2D line to the screen, which is the rectangle (0,0)-(w,h)
+     * This is the Cohen-Sutherland Clipping Algorithm
+     * Each of 9 regions gets an outcode, based on if it's at the top, bottom, left or right of the screen
+     * 1001 1000 1010  9 8 10
+     * 0001 0000 0010  1 0 2
+     * 0101 0100 0110  5 4 6
+     * int findregion returns which of the 9 regions a point is in, void clipline does the actual clipping */
     int findRegion(int x, int y)
     {
         int code=0;
 
         if(y >= h)
         {
-            code |= 1; //top
+            code |= 1; /* top */
         }
         else if( y < 0)
         {
-            code |= 2; //bottom
+            code |= 2; /* bottom */
         }
 
         if(x >= w)
         {
-            code |= 4; //right
+            code |= 4; /* right */
         }
         else if ( x < 0)
         {
-            code |= 8; //left
+            code |= 8; /* left */
         }
 
         return(code);
@@ -631,51 +631,51 @@ namespace sdlwrapper
     {
         int code1, code2, codeout;
         bool accept = 0, done=0;
-        code1 = findRegion(x1, y1); //the region outcodes for the endpoints
+        code1 = findRegion(x1, y1); /* the region outcodes for the endpoints */
         code2 = findRegion(x2, y2);
 
-        do  //In theory, this can never end up in an infinite loop, it'll always come in one of the trivial cases eventually
+        do
         {
             if(!(code1 | code2))
             {
-                accept = done = 1;  //accept because both endpoints are in screen or on the border, trivial accept
+                accept = done = 1;  /* accept because both endpoints are in screen or on the border, trivial accept */
             {
             else if(code1 & code2)
             {
-                done = 1; //the line isn't visible on screen, trivial reject
+                done = 1; /* the line isn't visible on screen, trivial reject */
             }
-            else  //if no trivial reject or accept, continue the loop
+            else  /* if no trivial reject or accept, continue the loop */
             {
                 int x, y;
                 codeout = code1 ? code1 : code2;
 
-                if(codeout & 1) //top
+                if(codeout & 1) /* top */
                 {
                     x = x1 + (x2 - x1) * (h - y1) / (y2 - y1);
                     y = h - 1;
                 }
-                else if(codeout & 2) //bottom
+                else if(codeout & 2) /* bottom */
                 {
                     x = x1 + (x2 - x1) * -y1 / (y2 - y1);
                     y = 0;
                 }
-                else if(codeout & 4) //right
+                else if(codeout & 4) /* right */
                 {
                     y = y1 + (y2 - y1) * (w - x1) / (x2 - x1);
                     x = w - 1;
                 }
-                else //left
+                else /* left */
                 {
                     y = y1 + (y2 - y1) * -x1 / (x2 - x1);
                     x = 0;
                 }
 
-                if(codeout == code1) //first endpoint was clipped
+                if(codeout == code1) /* first endpoint was clipped */
                 {
                     x1 = x; y1 = y;
                     code1 = findRegion(x1, y1);
                 }
-                else //second endpoint was clipped
+                else /* second endpoint was clipped */
                 {
                     x2 = x; y2 = y;
                     code2 = findRegion(x2, y2);
@@ -744,7 +744,7 @@ namespace sdlwrapper
         this->b = 0;
     }
 
-    //Add two colors
+    /* Add two colors */
     ColorRGB operator+(const ColorRGB& color, const ColorRGB& color2)
     {
         ColorRGB c;
@@ -754,7 +754,7 @@ namespace sdlwrapper
         return c;
     }
 
-    //Subtract two colors
+    /* Subtract two colors */
     ColorRGB operator-(const ColorRGB& color, const ColorRGB& color2)
     {
         ColorRGB c;
@@ -764,7 +764,7 @@ namespace sdlwrapper
         return c;
     }
 
-    //Multiplies a color with an integer
+    /* Multiplies a color with an integer */
     ColorRGB operator*(const ColorRGB& color, int a)
     {
         ColorRGB c;
@@ -774,7 +774,7 @@ namespace sdlwrapper
         return c;
     }
 
-    //Multiplies a color with an integer
+    /* Multiplies a color with an integer */
     ColorRGB operator*(int a, const ColorRGB& color)
     {
         ColorRGB c;
@@ -784,7 +784,7 @@ namespace sdlwrapper
         return c;
     }
 
-    //Divides a color through an integer
+    /* Divides a color through an integer */
     ColorRGB operator/(const ColorRGB& color, int a)
     {
         if(a == 0) return color;
@@ -795,13 +795,13 @@ namespace sdlwrapper
         return c;
     }
 
-    //Are both colors equal?
+    /* Are both colors equal? */
     bool operator==(const ColorRGB& color, const ColorRGB& color2)
     {
         return(color.r == color2.r && color.g == color2.g && color.b == color2.b);
     }
 
-    //Are both colors not equal?
+    /* Are both colors not equal? */
     bool operator!=(const ColorRGB& color, const ColorRGB& color2)
     {
         return(!(color.r == color2.r && color.g == color2.g && color.b == color2.b));
@@ -847,10 +847,10 @@ namespace sdlwrapper
     color components used in the calculations are normalized between 0.0-1.0
     */
 
-    //Converts an RGB color to HSL color
+    /* Converts an RGB color to HSL color */
     ColorHSL RGBtoHSL(const ColorRGB& colorRGB)
     {
-        float r, g, b, h = 0, s = 0, l; //this function works with floats between 0 and 1
+        float r, g, b, h = 0, s = 0, l; /* works with floats between 0 and 1 */
         r = colorRGB.r / 256.0;
         g = colorRGB.g / 256.0;
         b = colorRGB.b / 256.0;
@@ -858,11 +858,11 @@ namespace sdlwrapper
         float maxColor = std::max(r, std::max(g, b));
         float minColor = std::min(r, std::min(g, b));
 
-        if(minColor == maxColor) //R = G = B, so it's a shade of grey
+        if(minColor == maxColor) /*R == G == B = some shade of grey */
         {
-            h = 0; //it doesn't matter what value it has
+            h = 0;
             s = 0;
-            l = r; //doesn't matter if you pick r, g, or b
+            l = r;
         }
         else
         {
@@ -893,7 +893,7 @@ namespace sdlwrapper
                 h = 4.0 + (r - g) / (maxColor - minColor);
             }
 
-            h /= 6; //to bring it to a number between 0 and 1
+            h /= 6; /* to bring it between 0 and 1 */
 
             if(h < 0)
             {
@@ -909,24 +909,23 @@ namespace sdlwrapper
         return colorHSL;
     }
 
-    //Converts an HSL color to RGB color
+    /* Converts an HSL color to RGB color */
     ColorRGB HSLtoRGB(const ColorHSL& colorHSL)
     {
-        float r, g, b, h, s, l; //this function works with floats between 0 and 1
+        float r, g, b, h, s, l; /* this function works with floats between 0 and 1 */
         float temp1, temp2, tempr, tempg, tempb;
         h = colorHSL.h / 256.0;
         s = colorHSL.s / 256.0;
         l = colorHSL.l / 256.0;
 
-        //If saturation is 0, the color is a shade of grey
+        /* If saturation is 0, the color is a shade of grey */
         if(s == 0)
         {
             r = g = b = l;
         }
-        //If saturation > 0, more complex calculations are needed
+        /* If saturation > 0, more complex calculations are needed */
         else
         {
-            //set the temporary values
             if(l < 0.5)
             {
                 temp2 = l * (1 + s);
@@ -952,7 +951,7 @@ namespace sdlwrapper
                 tempb++;
             }
 
-            //red
+            /* red */
             if(tempr < 1.0 / 6.0)
             {
                 r = temp1 + (temp2 - temp1) * 6.0 * tempr;
@@ -970,7 +969,7 @@ namespace sdlwrapper
                 r = temp1;
             }
     
-            //green
+            /* green */
             if(tempg < 1.0 / 6.0)
             {
                 g = temp1 + (temp2 - temp1) * 6.0 * tempg;
@@ -988,7 +987,7 @@ namespace sdlwrapper
                 g = temp1;
             }
 
-            //blue
+            /* blue */
             if(tempb < 1.0 / 6.0)
             {
                 b = temp1 + (temp2 - temp1) * 6.0 * tempb;
@@ -1014,10 +1013,10 @@ namespace sdlwrapper
         return colorRGB;
     }
 
-    //Converts an RGB color to HSV color
+    /* Converts an RGB color to HSV color */
     ColorHSV RGBtoHSV(const ColorRGB& colorRGB)
     {
-        float r, g, b, h = 0.0, s = 0.0, v; //this function works with floats between 0 and 1
+        float r, g, b, h = 0.0, s = 0.0, v; /* this function works with floats between 0 and 1 */
         r = colorRGB.r / 256.0;
         g = colorRGB.g / 256.0;
         b = colorRGB.b / 256.0;
@@ -1027,14 +1026,14 @@ namespace sdlwrapper
 
         v = maxColor;
 
-        if(maxColor != 0.0) //avoid division by zero when the color is black
+        if(maxColor != 0.0) /* avoid division by zero when the color is black */
         {
             s = (maxColor - minColor) / maxColor;
         }
   
         if(s == 0.0)
         {
-            h = 0.0; //it doesn't matter what value it has
+            h = 0.0; /* it doesn't matter what value it has */
         }
         else
         {
@@ -1053,7 +1052,7 @@ namespace sdlwrapper
                 h = 4.0 + (r - g) / (maxColor - minColor);
             }
 
-            h /= 6.0; //to bring it to a number between 0 and 1
+            h /= 6.0; /* to bring it to a number between 0 and 1 */
 
             if(h < 0.0)
             {
@@ -1068,27 +1067,27 @@ namespace sdlwrapper
         return colorHSV;
     }
 
-    //Converts an HSV color to RGB color
+    /* Converts an HSV color to RGB color */
     ColorRGB HSVtoRGB(const ColorHSV& colorHSV)
     {
-        float r, g, b, h, s, v; //this function works with floats between 0 and 1
+        float r, g, b, h, s, v; /* this function works with floats between 0 and 1 */
         h = colorHSV.h / 256.0;
         s = colorHSV.s / 256.0;
         v = colorHSV.v / 256.0;
 
-        //if saturation is 0, the color is a shade of grey
+        /* if saturation is 0, the color is a shade of grey */
         if(s == 0.0)
         {
             r = g = b = v;
         }
-        //if saturation > 0, more complex calculations are needed
+        /* if saturation > 0, more complex calculations are needed */
         else
         {
             float f, p, q, t;
             int i;
-            h *= 6.0; //to bring hue to a number between 0 and 6, better for the calculations
-            i = int(floor(h)); //e.g. 2.7 becomes 2 and 3.01 becomes 3 or 4.9999 becomes 4
-            f = h - i;//the fractional part of h
+            h *= 6.0;          /* to bring hue to a number between 0 and 6, better for the calculations */
+            i = int(floor(h)); /* e.g. 2.7 becomes 2 and 3.01 becomes 3 or 4.9999 becomes 4 */
+            f = h - i;         /* the fractional part of h */
 
             p = v * (1.0 - s);
             q = v * (1.0 - (s * f));
@@ -1145,11 +1144,11 @@ namespace sdlwrapper
  *   File functions
  *
  */
-    void loadFile(std::vector<unsigned char>& buffer, const std::string& filename) //designed for loading files from hard disk in an std::vector
+    void loadFile(std::vector<unsigned char>& buffer, const std::string& filename) /* designed for loading files from hard disk in an std::vector */
     {
         std::ifstream file(filename.c_str(), std::ios::in|std::ios::binary|std::ios::ate);
 
-        //get filesize
+        /* get filesize */
         std::streamsize size = 0;
 
         if(file.seekg(0, std::ios::end).good())
@@ -1162,7 +1161,7 @@ namespace sdlwrapper
             size -= file.tellg();
         }
 
-        //read contents of the file into the vector
+        /* read contents of the file into the vector */
         buffer.resize(size_t(size));
 
         if(size > 0)
@@ -1171,7 +1170,7 @@ namespace sdlwrapper
         }
     }
 
-    //write given buffer to the file, overwriting the file, it doesn't append to it.
+    /* write given buffer to the file, overwriting the file, it doesn't append to it. */
     void saveFile(const std::vector<unsigned char>& buffer, const std::string& filename)
     {
         std::ofstream file(filename.c_str(), std::ios::out|std::ios::binary);
@@ -1231,9 +1230,9 @@ namespace sdlwrapper
  *   Text functions
  *
  */
-    //Draws character n at position x,y with color RGB and, if enabled, background color
-    //This function is used by the text printing functions below, and uses the font data
-    //defined below to draw the letter pixel by pixel
+    /*Draws character n at position x,y with color RGB and, if enabled, background color
+     *This function is used by the text printing functions below, and uses the font data
+     *defined below to draw the letter pixel by pixel */
     void drawLetter(unsigned char n, int x, int y, const ColorRGB& color, bool bg, const ColorRGB& color2)
     {
         int u,v;
@@ -1252,7 +1251,7 @@ namespace sdlwrapper
         }
     }
 
-    //Draws a string of text
+    /* Draws a string of text */
     int printString(const std::string& text, int x, int y, const ColorRGB& color, bool bg, const ColorRGB& color2, int forceLength)
     {
         int amount = 0;
@@ -1301,7 +1300,7 @@ namespace sdlwrapper
  */
     const int ASCII_ENTER = 13;
     const int ASCII_BACKSPACE = 8;
-    const int ASCII_SPACE = 32; //smallest printable ascii char
+    const int ASCII_SPACE = 32; /* smallest printable ascii char */
 
     Uint8 getInputCharacter()
     {
@@ -1318,7 +1317,7 @@ namespace sdlwrapper
   
         if(ascii < ASCII_SPACE && ascii != ASCII_ENTER && ascii != ASCII_BACKSPACE)
         {
-            ascii = 0; //<32 ones, except enter and backspace
+            ascii = 0; /* <32 ones, except enter and backspace */
         }
 
         if(ascii != previouschar)
@@ -1333,7 +1332,7 @@ namespace sdlwrapper
         return ascii;
     }
 
-    //returns a string, length is the maximum length of the given string array
+    /* returns a string, length is the maximum length of the given string array */
     void getInputString(std::string& text, const std::string& message, bool clear, int x, int y, const ColorRGB& color, bool bg, const ColorRGB& color2)
     {
         std::vector<Uint32> screenBuffer;
@@ -1378,7 +1377,7 @@ namespace sdlwrapper
             }
         }
   
-        //remove the input stuff from the screen again so there is room for possible next input
+        /* remove the input stuff from the screen again so there is room for possible next input */
         if(clear)
         {
             drawBuffer(&screenBuffer[0]);
@@ -1425,7 +1424,7 @@ namespace sdlwrapper
     
             if(pos % 57 == 0 && pos != 0)
             {
-                out.push_back(10); //newline char every 76 chars (57 = 3/4th of 76)
+                out.push_back(10); /* newline char every 76 chars (57 = 3/4th of 76) */
             }
         }
     }
@@ -1467,9 +1466,9 @@ namespace sdlwrapper
                 }
                 else if(c == '=')
                 {
-                    sextet[i] = 0; //value doesn't matter
+                    sextet[i] = 0; /* value doesn't matter */
                 }
-                else //unknown char, can be whitespace, newline, ...
+                else /* unknown char, can be whitespace, newline, ... */
                 {
                     pos++;
 
