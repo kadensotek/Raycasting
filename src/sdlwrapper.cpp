@@ -25,7 +25,7 @@ namespace sdlwrapper
 
 
 /*
- *  Keyboard functions
+ *  Keyboard action listeners
  *
  */
     bool keyDown(int key) /* returns true while key is held down */
@@ -314,6 +314,285 @@ namespace sdlwrapper
     unsigned long getTicks()
     {
         return SDL_GetTicks();
+    }
+
+/*
+ *  2D Shapes
+ *
+ */
+    //Fast horizontal line from (x1,y) to (x2,y), with rgb color
+    bool horLine(int y, int x1, int x2, const ColorRGB& color)
+    {
+        /* Swap x1 and x2; x1 must be leftmost endpoint */
+        if(x2 < x1)
+        {
+            x1 += x2;
+            x2 = x1 - x2;
+            x1 -= x2;
+        }
+
+        /* no single point of the line is on screen */
+        if(x2 < 0 || x1 >= w || y < 0 || y >= h)
+        {
+            return 0;
+        }
+
+        if(x1 < 0)
+        {
+            x1 = 0;
+        }
+
+        if(x2 >= w)
+        {
+            x2 = w - 1;
+        }
+  
+        Uint32 colorSDL = SDL_MapRGB(scr->format, color.r, color.g, color.b);
+        Uint32* bufp;
+        bufp = (Uint32*)scr->pixels + y * scr->pitch / 4 + x1;
+
+        for(int x = x1; x <= x2; x++)
+        {
+            *bufp = colorSDL;
+            bufp++;
+        }
+
+        return 1;
+    }
+
+    //Fast vertical line from (x,y1) to (x,y2), with rgb color
+    bool verLine(int x, int y1, int y2, const ColorRGB& color)
+    {
+        /* Swa[ y1 and y2 */
+        if(y2 < y1)
+        {
+            y1 += y2; y2 = y1 - y2; y1 -= y2;
+        }
+
+        if(y2 < 0 || y1 >= h  || x < 0 || x >= w)
+        {
+            return 0;
+        }
+
+        if(y1 < 0)
+        {
+            y1 = 0;
+        }
+
+        if(y2 >= w)
+        {
+            y2 = h - 1;
+        }
+   
+        Uint32 colorSDL = SDL_MapRGB(scr->format, color.r, color.g, color.b);
+        Uint32* bufp;
+  
+        bufp = (Uint32*)scr->pixels + y1 * scr->pitch / 4 + x;
+
+        for(int y = y1; y <= y2; y++)
+        {
+            *bufp = colorSDL;
+            bufp += scr->pitch / 4;
+        }
+
+        return 1;
+    }
+
+    //Bresenham line from (x1,y1) to (x2,y2) with rgb color
+    bool drawLine(int x1, int y1, int x2, int y2, const ColorRGB& color)
+    {
+        if(x1 < 0 || x1 > w - 1 || x2 < 0 || x2 > w - 1 || y1 < 0 || y1 > h - 1 || y2 < 0 || y2 > h - 1)
+        {
+            return 0;
+        }
+  
+        int deltax = std::abs(x2 - x1); //The difference between the x's
+        int deltay = std::abs(y2 - y1); //The difference between the y's
+        int x = x1; //Start x off at the first pixel
+        int y = y1; //Start y off at the first pixel
+        int xinc1, xinc2, yinc1, yinc2, den, num, numadd, numpixels, curpixel;
+
+        if(x2 >= x1) //The x-values are increasing
+        {
+            xinc1 = 1;
+            xinc2 = 1;
+        }
+        else //The x-values are decreasing
+        {
+            xinc1 = -1;
+            xinc2 = -1;
+        }
+
+        if(y2 >= y1) //The y-values are increasing
+        {
+            yinc1 = 1;
+            yinc2 = 1;
+        }
+        else //The y-values are decreasing
+        {
+            yinc1 = -1;
+            yinc2 = -1;
+        }
+
+        if(deltax >= deltay) //There is at least one x-value for every y-value
+        {
+            xinc1 = 0; //Don't change the x when numerator >= denominator
+            yinc2 = 0; //Don't change the y for every iteration
+            den = deltax;
+            num = deltax / 2;
+            numadd = deltay;
+            numpixels = deltax; //There are more x-values than y-values
+        }
+        else //There is at least one y-value for every x-value
+        {
+            xinc2 = 0; //Don't change the x for every iteration
+            yinc1 = 0; //Don't change the y when numerator >= denominator
+            den = deltay;
+            num = deltay / 2;
+            numadd = deltax;
+            numpixels = deltay; //There are more y-values than x-values
+        }
+
+        for (curpixel = 0; curpixel <= numpixels; curpixel++)
+        {
+            pset(x % w, y % h, color);  //Draw the current pixel
+            num += numadd;  //Increase the numerator by the top of the fraction
+
+            if (num >= den) //Check if numerator >= denominator
+            {
+                num -= den; //Calculate the new numerator value
+                x += xinc1; //Change the x as appropriate
+                y += yinc1; //Change the y as appropriate
+            }
+
+            x += xinc2; //Change the x as appropriate
+            y += yinc2; //Change the y as appropriate
+        }
+  
+        return 1;
+    }
+
+    //Bresenham circle with center at (xc,yc) with radius and red green blue color
+    bool drawCircle(int xc, int yc, int radius, const ColorRGB& color)
+    {
+        if(xc - radius < 0 || xc + radius >= w || yc - radius < 0 || yc + radius >= h) return 0;
+
+        int x = 0;
+        int y = radius;
+        int p = 3 - (radius << 1);
+        int a, b, c, d, e, f, g, h;
+
+        while (x <= y)
+        {
+            a = xc + x; //8 pixels can be calculated at once thanks to the symmetry
+            b = yc + y;
+            c = xc - x;
+            d = yc - y;
+            e = xc + y;
+            f = yc + x;
+            g = xc - y;
+            h = yc - x;
+            pset(a, b, color);
+            pset(c, d, color);
+            pset(e, f, color);
+            pset(g, f, color);
+
+            if(x > 0) //avoid drawing pixels at same position as the other ones
+            {
+                pset(a, d, color);
+                pset(c, b, color);
+                pset(e, h, color);
+                pset(g, h, color);
+            }
+
+            if(p < 0)
+            {
+                p += (x++ << 2) + 6;
+            }
+            else
+            {
+                p += ((x++ - y--) << 2) + 10;
+            }
+        }
+  
+        return 1;
+    }
+
+    //Filled bresenham circle with center at (xc,yc) with radius and red green blue color
+    bool drawDisk(int xc, int yc, int radius, const ColorRGB& color)
+    {
+        //every single pixel outside screen, so don't waste time on it
+        if(xc + radius < 0 || xc - radius >= w || yc + radius < 0 || yc - radius >= h)
+        {
+            return 0;
+        }
+
+        int x = 0;
+        int y = radius;
+        int p = 3 - (radius << 1);
+        int a, b, c, d, e, f, g, h;
+        int pb = yc + radius + 1, pd = yc + radius + 1; //previous values: to avoid drawing horizontal lines multiple times
+
+        while (x <= y)
+        {
+            // write data
+            a = xc + x;
+            b = yc + y;
+            c = xc - x;
+            d = yc - y;
+            e = xc + y;
+            f = yc + x;
+            g = xc - y;
+            h = yc - x;
+
+            if(b != pb)
+            {
+                horLine(b, a, c, color);
+            }
+
+            if(d != pd)
+            {
+                horLine(d, a, c, color);
+            }
+
+            if(f != b)
+            {
+                horLine(f, e, g, color);
+            }
+
+            if(h != d && h != f)
+            {
+                horLine(h, e, g, color);
+            }
+
+            pb = b;
+            pd = d;
+
+            if(p < 0)
+            {
+                p += (x++ << 2) + 6;
+            }
+            else
+            {
+                p += ((x++ - y--) << 2) + 10;
+            }
+        }
+  
+        return 1;
+    }
+
+    //Rectangle with corners (x1,y1) and (x2,y2) and rgb color
+    bool drawRect(int x1, int y1, int x2, int y2, const ColorRGB& color)
+    {
+        if(x1 < 0 || x1 > w - 1 || x2 < 0 || x2 > w - 1 || y1 < 0 || y1 > h - 1 || y2 < 0 || y2 > h - 1) return 0;
+        SDL_Rect rec;
+        rec.x = x1;
+        rec.y = y1;
+        rec.w = x2 - x1 + 1;
+        rec.h = y2 - y1 + 1;
+        Uint32 colorSDL = SDL_MapRGB(scr->format, color.r, color.g, color.b);
+        SDL_FillRect(scr, &rec, colorSDL);  //SDL's ability to draw a hardware rectangle is used for now
+        return 1;
     }
 
 
