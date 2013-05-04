@@ -1296,9 +1296,210 @@ namespace sdlwrapper
 
 
 /*
+ *   Text input functions
+ *
+ */
+    const int ASCII_ENTER = 13;
+    const int ASCII_BACKSPACE = 8;
+    const int ASCII_SPACE = 32; //smallest printable ascii char
+
+    Uint8 getInputCharacter()
+    {
+        int ascii = 0;
+        static int previouschar = 0;
+  
+        if ((event.key.keysym.unicode & 0xFF80) == 0)
+        {
+            if(event.type == SDL_KEYDOWN)
+            {
+                ascii = event.key.keysym.unicode & 0x7F;
+            }
+        }
+  
+        if(ascii < ASCII_SPACE && ascii != ASCII_ENTER && ascii != ASCII_BACKSPACE)
+        {
+            ascii = 0; //<32 ones, except enter and backspace
+        }
+
+        if(ascii != previouschar)
+        {
+           previouschar = ascii;
+        }
+        else
+        {
+            ascii = 0;
+        }
+
+        return ascii;
+    }
+
+    //returns a string, length is the maximum length of the given string array
+    void getInputString(std::string& text, const std::string& message, bool clear, int x, int y, const ColorRGB& color, bool bg, const ColorRGB& color2)
+    {
+        std::vector<Uint32> screenBuffer;
+        getScreenBuffer(screenBuffer);
+  
+        bool enter = 0;
+        bool change = 1;
+        text.clear();
+  
+        while(enter == 0)
+        {
+            if(done())
+            {
+                end();
+            }
+
+            Uint8 temp = getInputCharacter();
+
+            if(temp >= ASCII_SPACE)
+            {
+                text.push_back(temp);
+                change = 1;
+            }
+
+            if(temp == ASCII_BACKSPACE && text.size() > 0)
+            {
+                text.resize(text.size() - 1); change = 1;
+            }
+
+            if(change)
+            {
+                drawBuffer(&screenBuffer[0]);
+                int pos = print(message, x, y, color, bg, color2);
+                int x2 = pos / h, y2 = pos % h;
+                print(text, x2, y2, color, bg, color2);
+                redraw();
+            }
+
+            if(temp == ASCII_ENTER)
+            {
+                enter = 1;
+            }
+        }
+  
+        //remove the input stuff from the screen again so there is room for possible next input
+        if(clear)
+        {
+            drawBuffer(&screenBuffer[0]);
+            redraw();
+        }
+    }
+
+    void encodeBase64(const std::vector<unsigned char>& in, std::string& out)
+    {
+        const std::string characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+        unsigned long bit24 = 0;
+        unsigned long sextet[4] = {0, 0, 0, 0};
+        unsigned long octet[3] = {0, 0, 0};
+  
+        out.clear();
+        out.reserve((4 * in.size()) / 3);
+  
+        for(size_t pos = 0; pos < in.size(); pos += 3)
+        {
+            octet[0] = in[pos + 0];
+            octet[1] = (pos + 1 < in.size()) ? in[pos + 1] : 0;
+            octet[2] = (pos + 2 < in.size()) ? in[pos + 2] : 0;
+    
+            bit24  = 256 * 256 * octet[0];
+            bit24 +=       256 * octet[1];
+            bit24 +=             octet[2];
+    
+            sextet[0] = (bit24 / (64 * 64 * 64)) % 64;
+            sextet[1] = (bit24 / (     64 * 64)) % 64;
+            sextet[2] = (bit24 / (          64)) % 64;
+            sextet[3] = (bit24 / (           1)) % 64;
+    
+            for(size_t i = 0; i < 4; i++)
+            {
+                if(pos + i - 1 < in.size())
+                {
+                    out.push_back(characters[sextet[i]]);
+                }
+                else
+                {
+                    out.push_back('=');
+                }
+            }
+    
+            if(pos % 57 == 0 && pos != 0)
+            {
+                out.push_back(10); //newline char every 76 chars (57 = 3/4th of 76)
+            }
+        }
+    }
+  
+    void decodeBase64(std::vector<unsigned char>& out, const std::string& in)
+    {
+        unsigned long bit24 = 0;
+        unsigned long sextet[4] = {0, 0, 0, 0};
+        unsigned long octet[3] = {0, 0, 0};
+  
+        out.clear();
+        out.reserve((3 * in.size()) / 4);
+  
+        for(size_t pos = 0; pos < in.size() - 3; pos += 4)
+        {
+            for(size_t i = 0; i < 4; i++)
+            {
+                unsigned long c = in[pos + i];
+
+                if(c >= 65 && c <= 90)
+                {
+                    sextet[i] = c - 65;
+                }
+                else if(c >= 97 && c <= 122)
+                {
+                    sextet[i] = c - 71;
+                }
+                else if(c >= 48 && c <= 57)
+                {
+                    sextet[i] = c + 4;
+                }
+                else if(c == '+')
+                {
+                    sextet[i] = 62;
+                }
+                else if(c == '/')
+                {
+                    sextet[i] = 63;
+                }
+                else if(c == '=')
+                {
+                    sextet[i] = 0; //value doesn't matter
+                }
+                else //unknown char, can be whitespace, newline, ...
+                {
+                    pos++;
+
+                    if(pos > in.size() - 3) return;
+                    i--;
+                 }
+            }
+    
+            bit24  = 64 * 64 * 64 * sextet[0];
+            bit24 +=      64 * 64 * sextet[1];
+            bit24 +=           64 * sextet[2];
+            bit24 +=                sextet[3];
+    
+            octet[0] = (bit24 / (256 * 256)) % 256;
+            octet[1] = (bit24 / (      256)) % 256;
+            octet[2] = (bit24 / (        1)) % 256;
+    
+            for(size_t i = 0; i < 3; i++)
+            {
+                if(in[pos + 1 + i] != '=') out.push_back(octet[i]);
+            }
+        }
+    }
+
+
+/*
  *
  *
  */
+
 
 
 
