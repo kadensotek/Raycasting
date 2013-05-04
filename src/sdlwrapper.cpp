@@ -8,7 +8,7 @@
 #include <iostream>
 #include <fstream>
 
-namespace sdlwrapper
+namespace SDLwrapper
 {
 
 /*
