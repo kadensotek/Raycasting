@@ -639,7 +639,7 @@ namespace SDLwrapper
             if(!(code1 | code2))
             {
                 accept = done = 1;  /* accept because both endpoints are in screen or on the border, trivial accept */
-            {
+            }
             else if(code1 & code2)
             {
                 done = 1; /* the line isn't visible on screen, trivial reject */

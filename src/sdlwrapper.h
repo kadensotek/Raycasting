@@ -1,5 +1,6 @@
 #ifndef _sdlwrapper_h_included
 #define _sdlwrapper_h_included
+#endif
 
 #include <SDL/SDL.h>
 #include <vector>
@@ -32,7 +33,7 @@ namespace SDLwrapper
     template<typename T>
     T strtoval(const std::string& s)
     {
-        std:istringstream sstream(s);
+        std::istringstream sstream(s);
         T val;
         sstream >> val;
         return val;
@@ -155,7 +156,7 @@ namespace SDLwrapper
     void redraw();
     void cls(const ColorRGB& color = RGB_Black);
     void pset(int x, int y, const ColorRGB& color);
-    ColorRGB pget(intx, int y);
+    ColorRGB pget(int x, int y);
     void drawBuffer(Uint32 *buffer);
     bool onScreen(int x, int y);
 
