@@ -29,8 +29,8 @@ int worldMap[mapWidth][mapHeight]=
 
 int main()
 {
-    double posX = 22;
-    double posY = 12;
+    double posX = 3;
+    double posY = 3;
     double dirX = -1;
     double dirY = 0;
     double planeX = 0;
@@ -173,6 +173,54 @@ int main()
         print(1.0 / frameTime);  /* prints FPS counter  */
         redraw();
         cls();
+
+        /* speed modifiers */
+        double moveSpeed = frameTime*5.0; /* squares per second */
+        double rotSpeed = frameTime *3.0; /* radians per second */
+        readKeys();
+
+        if(keyDown(SDLK_UP))
+        {
+            if(worldMap[int(posX + dirX * moveSpeed)][int(posY)] == false)
+            {
+                posX += dirX * moveSpeed;
+            }
+
+            if(worldMap[int(posX)][int(posY + dirY * moveSpeed)] == false)
+            {
+                posY += dirY * moveSpeed;
+            }
+        }
+        if(keyDown(SDLK_DOWN))
+        {
+            if(worldMap[int(posX - dirX * moveSpeed)][int(posY)] == false)
+            {
+                posX -= dirX * moveSpeed;
+            }
+
+            if(worldMap[int(posX)][int(posY - dirY * moveSpeed)] == false)
+            {
+                posY -= dirY * moveSpeed;
+            }
+        }
+        if(keyDown(SDLK_RIGHT))
+        {
+            double oldDirX = dirX;
+            dirX = dirX*cos(-rotSpeed) - dirY*sin(-rotSpeed);
+            dirY = oldDirX*sin(-rotSpeed) + dirY*cos(-rotSpeed);
+            double oldPlaneX = planeX;
+            planeX = planeX*cos(-rotSpeed) - planeY*sin(-rotSpeed);
+            planeY = oldPlaneX*sin(-rotSpeed) + planeY*cos(-rotSpeed);
+        }
+        if(keyDown(SDLK_LEFT))
+        {
+            double oldDirX = dirX;
+            dirX = dirX*cos(rotSpeed) - dirY*sin(rotSpeed);
+            dirY = oldDirX*sin(rotSpeed) + dirY*cos(rotSpeed);
+            double oldPlaneX = planeX;
+            planeX = planeX*cos(rotSpeed) - planeY*sin(rotSpeed);
+            planeY = oldPlaneX*sin(rotSpeed) + planeY*cos(rotSpeed);
+        }
     }
 
     return 0;
