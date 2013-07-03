@@ -30,7 +30,13 @@ int main()
 
     while(!done())
     {
+        /* handles timing/FPS */
+        oldTime = time;
+        time = getTicks();
+        double frameTime = (time - oldTime) / 1000.0; /* time for frame in seconds */
+        print(1.0 / frameTime);  /* prints FPS counter  */
         redraw();
+        cls();
     }
 
     return 0;
