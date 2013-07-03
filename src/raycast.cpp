@@ -4,8 +4,7 @@
 #include <iostream>
 
 #include "sdlwrapper.h"
-
-using namespace sdlwrapper;
+using namespace SDLwrapper;
 
 #define screenWidth 640
 #define screenHeight 480
@@ -17,5 +16,22 @@ using namespace sdlwrapper;
 
 int main()
 {
+    double posX = 22;
+    double posY = 12;
+    double dirX = -1;
+    double dirY = 0;
+    double planeX = 0;
+    double planeY = .66;
+
+    double time = 0;
+    double oldTime = 0;
+
+    screen(512, 384, 0, "Raycaster");
+
+    while(!done())
+    {
+        redraw();
+    }
+
     return 0;
 }
