@@ -43,6 +43,24 @@ int main()
 
     while(!done())
     {
+        /* ray position and direction */
+        double cameraX = 2*x / double(w)-1;
+        double rayPosX = posX;
+        double rayPosY = posY;
+        double rayDirX = dirX + planeX * cameraX;
+        double rayDirY = dirY + planeY * cameraX;
+        int mapX = int(rayPosX);
+        int mapY = int(rayPosY);
+
+        /* used to figure out how far next X or Y side is from current position */
+        double sideDistX;
+        double sideDistY;
+
+        /* length of ray between one X or Y side to next X or Y side */
+        double deltaDistX = sqrt(1 + (rayDirY * rayDirY) / (rayDirX * rayDirX));
+        double deltaDistY = sqrt(1 + (rayDirX * rayDirX) / (rayDirY * rayDirY));
+        double perpWallDist;
+
         /* handles timing/FPS */
         oldTime = time;
         time = getTicks();
