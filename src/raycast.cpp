@@ -10,9 +10,22 @@ using namespace SDLwrapper;
 #define screenHeight 480
 #define texWidth 64
 #define texHeight 64
-#define mapWidth 24
-#define mapHeight 24
+#define mapWidth 10
+#define mapHeight 10 
 
+int worldMap[mapWidth][mapHeight]=
+{
+    {1,1,1,1,1,1,1,1,1,1}
+    {1,0,0,0,0,0,0,0,0,1}
+    {1,0,0,0,0,0,0,0,0,1}
+    {1,0,0,0,0,0,0,0,0,1}
+    {1,0,0,0,0,0,0,0,0,1}
+    {1,0,0,0,0,0,0,0,0,1}
+    {1,0,0,0,0,0,0,0,0,1}
+    {1,0,0,0,0,0,0,0,0,1}
+    {1,0,0,0,0,0,0,0,0,1}
+    {1,1,1,1,1,1,1,1,1,1}
+}
 
 int main()
 {
