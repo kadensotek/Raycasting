@@ -141,7 +141,7 @@ int main()
 
             if(drawEnd >= h)
             {
-                drawStart = h-1;
+                drawEnd = h-1;
             }
 
             ColorRGB color;
