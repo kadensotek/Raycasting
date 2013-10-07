@@ -42,7 +42,7 @@ namespace SDLwrapper
 
         if(inkeys[key])
         {
-            if(keypressed[key] == false)
+            if(!keypressed[key])
             {
                 keypressed[key] = true;
                 return true;
@@ -71,7 +71,7 @@ namespace SDLwrapper
 
         if(SDL_Init(SDL_INIT_EVERYTHING) < 0)
         {
-            printf("Unable to init SDL: %s\n", SDL_GetError());
+            printf("Unable to initialize SDL: %s\n", SDL_GetError());
             SDL_Quit();
             std::exit(1);
         }
@@ -104,8 +104,12 @@ namespace SDLwrapper
     void lock()
     {
         if(SDL_MUSTLOCK(scr))
-        if(SDL_LockSurface(scr) < 0)
-        return;
+        {
+            if(SDL_LockSurface(scr) < 0)
+            {
+                return;
+            }
+        }
     }
 
     /* Unlocks the screen */
@@ -132,7 +136,11 @@ namespace SDLwrapper
     /* Puts an RGB color pixel at position x,y */
     void pset(int x, int y, const ColorRGB& color)
     {
-        if(x < 0 || y < 0 || x >= w || y >= h) return;
+        if(x < 0 || y < 0 || x >= w || y >= h)
+        {
+            return;
+        }
+
         Uint32 colorSDL = SDL_MapRGB(scr->format, color.r, color.g, color.b);
         Uint32* bufp;
         bufp = (Uint32*)scr->pixels + y * scr->pitch / 4 + x;
@@ -142,12 +150,17 @@ namespace SDLwrapper
     /* Gets RGB color of pixel at position x,y */
     ColorRGB pget(int x, int y)
     {
-        if(x < 0 || y < 0 || x >= w || y >= h) return RGB_Black;
+        if(x < 0 || y < 0 || x >= w || y >= h)
+        {
+            return RGB_Black;
+        }
+
         Uint32* bufp;
         bufp = (Uint32*)scr->pixels + y * scr->pitch / 4 + x;
         Uint32 colorSDL = *bufp;
         ColorRGB8bit colorRGB;
         SDL_GetRGB(colorSDL, scr->format, &colorRGB.r, &colorRGB.g, &colorRGB.b);
+
         return ColorRGB(colorRGB);
     }
 
@@ -584,7 +597,11 @@ namespace SDLwrapper
     /* Rectangle with corners (x1,y1) and (x2,y2) and rgb color */
     bool drawRect(int x1, int y1, int x2, int y2, const ColorRGB& color)
     {
-        if(x1 < 0 || x1 > w - 1 || x2 < 0 || x2 > w - 1 || y1 < 0 || y1 > h - 1 || y2 < 0 || y2 > h - 1) return 0;
+        if(x1 < 0 || x1 > w - 1 || x2 < 0 || x2 > w - 1 || y1 < 0 || y1 > h - 1 || y2 < 0 || y2 > h - 1)
+        {
+            return 0;
+        }
+
         SDL_Rect rec;
         rec.x = x1;
         rec.y = y1;
@@ -592,6 +609,7 @@ namespace SDLwrapper
         rec.h = y2 - y1 + 1;
         Uint32 colorSDL = SDL_MapRGB(scr->format, color.r, color.g, color.b);
         SDL_FillRect(scr, &rec, colorSDL);  /* SDL's ability to draw a hardware rectangle is used for now */
+
         return 1;
     }
 
@@ -681,7 +699,7 @@ namespace SDLwrapper
                     code2 = findRegion(x2, y2);
                 }
             }
-        } while(done == 0);
+        }while(done == 0);
 
         if(accept)
         {
@@ -2063,10 +2081,6 @@ O9lUrLR/ABF/3H2EtBmWAAAAAElFTkSuQmCC";
  *  SDL helper functions
  *
  */
-
-    /* SDL's C functions don't have destructors and such so therefore this here is needed
-     * currently only needed for audio, therefor it's not in a different cpp file. */
-
     /*this creates SDL mutexes and makes sure that they're destroyed at the end. MutexFactory does the deletion! */
     struct MutexFactory
     {
