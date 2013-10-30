@@ -44,17 +44,17 @@ int worldMap[mapWidth][mapHeight]=
 
 int main()
 {
-    double posX = 1.1;
-    double posY = 1.1;
-    double dirX = -1;
-    double dirY = 0;
-    double planeX = 0;
-    double planeY = .66;
+    double xPos = 1.1;
+    double yPos = 1.1;
+    double xDir = -1;
+    double yDir = 0;
+    double xPlane = 0;
+    double yPlane = .66;
 
     double time = 0;
     double oldTime = 0;
 
-    screen(512, 384, 0, "Raycaster");
+    screen(512, 384, 0, "Raycasting Demo");
 
     while(!done())
     {
@@ -62,10 +62,10 @@ int main()
         {
             /* ray position and direction */
             double cameraX = 2*x / double(w)-1;
-            double rayPosX = posX;
-            double rayPosY = posY;
-            double rayDirX = dirX + planeX * cameraX;
-            double rayDirY = dirY + planeY * cameraX;
+            double rayPosX = xPos;
+            double rayPosY = yPos;
+            double rayDirX = xDir + xPlane * cameraX;
+            double rayDirY = yDir + yPlane * cameraX;
             int mapX = int(rayPosX);
             int mapY = int(rayPosY);
 
@@ -191,50 +191,50 @@ int main()
 
         /* speed modifiers */
         double moveSpeed = frameTime*5.0; /* squares per second */
-        double rotSpeed = frameTime *3.0; /* radians per second */
+        double rotationSpeed = frameTime *3.0; /* radians per second */
         readKeys();
 
         if(keyDown(SDLK_UP))
         {
-            if(worldMap[int(posX + dirX * moveSpeed)][int(posY)] == false)
+            if(worldMap[int(xPos + xDir * moveSpeed)][int(yPos)] == false)
             {
-                posX += dirX * moveSpeed;
+                xPos += xDir * moveSpeed;
             }
 
-            if(worldMap[int(posX)][int(posY + dirY * moveSpeed)] == false)
+            if(worldMap[int(xPos)][int(yPos + yDir * moveSpeed)] == false)
             {
-                posY += dirY * moveSpeed;
+                yPos += yDir * moveSpeed;
             }
         }
         if(keyDown(SDLK_DOWN))
         {
-            if(worldMap[int(posX - dirX * moveSpeed)][int(posY)] == false)
+            if(worldMap[int(xPos - xDir * moveSpeed)][int(yPos)] == false)
             {
-                posX -= dirX * moveSpeed;
+                xPos -= xDir * moveSpeed;
             }
 
-            if(worldMap[int(posX)][int(posY - dirY * moveSpeed)] == false)
+            if(worldMap[int(xPos)][int(yPos - yDir * moveSpeed)] == false)
             {
-                posY -= dirY * moveSpeed;
+                yPos -= yDir * moveSpeed;
             }
         }
         if(keyDown(SDLK_RIGHT))
         {
-            double oldDirX = dirX;
-            dirX = dirX*cos(-rotSpeed) - dirY*sin(-rotSpeed);
-            dirY = oldDirX*sin(-rotSpeed) + dirY*cos(-rotSpeed);
-            double oldPlaneX = planeX;
-            planeX = planeX*cos(-rotSpeed) - planeY*sin(-rotSpeed);
-            planeY = oldPlaneX*sin(-rotSpeed) + planeY*cos(-rotSpeed);
+            double oldXDir = xDir;
+            xDir = xDir*cos(-rotationSpeed) - yDir*sin(-rotationSpeed);
+            yDir = oldXDir*sin(-rotationSpeed) + yDir*cos(-rotationSpeed);
+            double oldXPlane = xPlane;
+            xPlane = xPlane*cos(-rotationSpeed) - yPlane*sin(-rotationSpeed);
+            yPlane = oldXPlane*sin(-rotationSpeed) + yPlane*cos(-rotationSpeed);
         }
         if(keyDown(SDLK_LEFT))
         {
-            double oldDirX = dirX;
-            dirX = dirX*cos(rotSpeed) - dirY*sin(rotSpeed);
-            dirY = oldDirX*sin(rotSpeed) + dirY*cos(rotSpeed);
-            double oldPlaneX = planeX;
-            planeX = planeX*cos(rotSpeed) - planeY*sin(rotSpeed);
-            planeY = oldPlaneX*sin(rotSpeed) + planeY*cos(rotSpeed);
+            double oldXDir = xDir;
+            xDir = xDir*cos(rotationSpeed) - yDir*sin(rotationSpeed);
+            yDir = oldXDir*sin(rotationSpeed) + yDir*cos(rotationSpeed);
+            double oldXPlane = xPlane;
+            xPlane = xPlane*cos(rotationSpeed) - yPlane*sin(rotationSpeed);
+            yPlane = oldXPlane*sin(rotationSpeed) + yPlane*cos(rotationSpeed);
         }
     }
 
